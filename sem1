@@ -1,0 +1,30 @@
+//task 1
+#include <stdio.h>
+int main()
+{
+    printf("Hello World");
+    return 0;
+}
+
+//task2
+#include <stdio.h>
+int main()
+{
+    printf("*******************\n");
+    printf("*My_name_is_Alexey*\n");
+    printf("*******************");
+    return 0;
+}
+
+//task3
+#include <stdio.h>
+int main()
+{
+    for(int x = 1; x < 11; x++){
+        for(int y = 1; y < 11; y++){
+            printf("%2d ",x*y);
+        }
+        printf("\n");
+    }
+    return 0;
+}
