@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+int main()
+{
+    char a=0,b=0;
+    int c;
+    while((c=getchar())!='.'){
+        if(c!='-'){
+            if(a==0){
+                a = c;
+                continue;
+            }
+            if(b==0){
+                b = c;
+                if(b>a){
+                    for(int z = a; z<=b; z++){
+                        putchar(z);
+                    }
+                }
+                if(a>b){
+                    for(int z = a; z<=b; z--){
+                        putchar(z);
+                    }
+                }
+                a=b=0;
+            }
+            
+        }
+    }
+   
+    return 0;
+}
