@@ -1,11 +1,22 @@
 #include <stdio.h>
+int degree(int a, int b){
+    int temp = a;
+    if(b == 0){
+        return 1;
+    }
+    for (int x = 0; x<b-1; x++){
+        a*= temp;
+    }
+    
+    return a;
+}
 int ToDec(char s[], int size){
     char alph[] = "0123456789abcdef";
     int output = 0;
-    for(int i=0; i<size; i++){
-        for( int j=0; j<16; j++){
-            if(s[size-i-1]==alph[j]){
-                output += j*16^i;
+    for(int i = 0; i<size; i++){
+        for(int j = 0; j<16; j++){
+            if(alph[j] == s[i]){
+                output += j*degree(16,size-1-i);
             }
         }
     }
@@ -28,7 +39,8 @@ int main()
     }
     input[i] = '\0';
     
-    printf("%s\n",input);
-    printf("%d",ToDec(input,i));
+    printf("input is %s\n",input);
+    printf("test degree %d\n",degree(2,4));
+    printf(" output is %d",ToDec(input,i));
     return 0;
 }
