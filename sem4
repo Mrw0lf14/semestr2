@@ -44,3 +44,18 @@ int main()
     printf(" output is %d",ToDec(input,i));
     return 0;
 }
+//task2
+#include <stdio.h>
+
+int main()
+{
+    int input;
+    int count=0;
+    scanf("%d", &input);
+    while(input>0){
+        count += input&1;
+        input = input>>2;
+    }
+    printf("%d", count);
+    return 0;
+}
