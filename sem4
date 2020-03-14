@@ -1,4 +1,15 @@
 #include <stdio.h>
+int degree(int, int);
+int ToDec(char[]);
+int main()
+{
+    char input[256];
+    int i = 0;
+    scanf("%[0-9a-fA-F]", input);
+    printf("input is %s\n",input);
+    printf("output is %d",ToDec(input));
+    return 0;
+}
 int degree(int a, int b){
     int temp = a;
     if(b == 0){
@@ -7,13 +18,14 @@ int degree(int a, int b){
     for (int x = 0; x<b-1; x++){
         a*= temp;
     }
-    
     return a;
 }
-int ToDec(char s[], int size){
+int ToDec(char s[]){
     char alph[] = "0123456789abcdef";
     int output = 0;
-    for(int i = 0; i<size; i++){
+    int size;
+    for(size = 0; s[size]!='\0'; size++){}
+    for(int i = 0; s[i]!='\0'; i++){
         for(int j = 0; j<16; j++){
             if(alph[j] == s[i]){
                 output += j*degree(16,size-1-i);
@@ -21,28 +33,6 @@ int ToDec(char s[], int size){
         }
     }
     return output;
-}
-int main()
-{
-    char input[256];
-    int i = 0;
-    while((input[i]=getchar())!='.'){
-        if(('A'<=input[i] && input[i]<='F') || ('a'<=input[i] && input[i]<='f') || ('0'<=input[i] && input[i]<='9')){
-           if('A'<=input[i] && input[i]<='F'){
-               input[i] = input[i] - 'A' + 'a';
-           }
-        } else{
-            printf("Error: unknown symbol");
-            return 1;
-        }
-        i++;
-    }
-    input[i] = '\0';
-    
-    printf("input is %s\n",input);
-    printf("test degree %d\n",degree(2,4));
-    printf(" output is %d",ToDec(input,i));
-    return 0;
 }
 //task2
 #include <stdio.h>
