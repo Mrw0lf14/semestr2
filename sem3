@@ -1,39 +1,57 @@
 #include <stdio.h>
-
+void print(char,char);
 int main()
 {
+    char s1[10];
     char a=0,b=0;
-    int c;
-    while((c=getchar())!='.'){
-        if(c!='-'){
-            if(a==0){
-                a = c;
-                continue;
-            }
-            if(b==0){
-                b = c;
-                if(b>a){
-                    for(int z = a; z<=b; z++){
-                        putchar(z);
+    while (1){
+        scanf("%s", s1);
+        for (int i = 0; s1[i] != '\0'; i++){
+            if(s1[i]!='-'){
+                if (a == 0){
+                    a = s1[i];
+                } 
+                else if (b == 0){
+                    b = s1[i]; 
+                    print(a,b);
+                    if (s1[i+1]=='-'){
+                        a = b;
+                    } else{
+                        a = 0; b = 0;
                     }
                 }
-                if(a>b){
-                    for(int z = a; z<=b; z--){
-                        putchar(z);
-                    }
-                }
-                a=b=0;
-            }
-            
+            } else b = 0;
         }
     }
-   
     return 0;
+}
+void print(char a, char b){
+    if (a<b){
+        for (int i = a; i<=b; i++){
+            putchar(i);
+        }
+    }
+    if (a>b){
+        for (int i = a; i>=b; i--){
+            putchar(i);
+        }
+    }
 }
 //task2
 #include <stdio.h>
-void substruct(char s_1[256], char s_2[256]){
-    
+void substruct(char[],char[]);
+int main()
+{
+    char s1[256];
+    char s2[256]; 
+    printf("Put in s1:");
+    scanf("%s", s1);
+    printf("Put in s2:");
+    scanf("%s", s2);
+    substruct(s1,s2);
+    return 0;
+}
+void substruct(char s_1[], char s_2[]){
     for (int x = 0; x<256; x++){
         for (int y = 0; y<256; y++){
             if(s_1[y] == s_2[x]){
@@ -48,21 +66,9 @@ void substruct(char s_1[256], char s_2[256]){
         }
     }
 }
-
-int main()
-{
-    char s1[256];
-    char s2[256]; 
-    printf("Put in s1:");
-    scanf("%s", &s1);
-    printf("Put in s2:");
-    scanf("%s", &s2);
-    substruct(s1,s2);
-    return 0;
-}
+//task3
 //task3
 #include <stdio.h>
-
 int main()
 {
     char s[256];
@@ -70,18 +76,12 @@ int main()
     char input;
     char sequence[]="abcdefghijklmnopqrstuvwxyz0123456789";
     int frequency[36];
-    
+    int max = 0;
     for (int i=0; i<36; i++){
         frequency[i] = 0;
     }
-    printf("Put in s:");
-    //scanf("%s", &s);
-    while( (input = getchar()) != '\n'){
-        s[count] = input;
-        count++;
-    }
-    
-    for(int x=0; x<count; x++){
+    scanf("%s", s);
+    for(int x=0; s[x]!='\0'; x++){
         for(int i=0; i<36; i++){
             if(s[x]==sequence[i]){
                 frequency[i]++;
@@ -89,9 +89,33 @@ int main()
         }
     }
     for(int i=0; i<36; i++){
-        if(frequency[i] != 0){
-            printf("%c:%d\n",sequence[i],frequency[i]);
+        if(frequency[i]>max){
+            max = frequency[i];
         }
+    }
+    printf("horizontal\n");
+    for(int i=0; i<36; i++){
+        if(frequency[i] != 0){
+            printf("%c: ",sequence[i]);
+            for (int j=0; j<frequency[i];j++){
+                putchar('#');
+            }
+            putchar('\n');
+        }
+    }
+    printf("vertical\n");
+    for(int j=max; j>0; j--){
+        for (int i=0; i<36; i++){
+            if (frequency[i]==j){
+                printf("# ");
+                frequency[i]--;
+            } else
+            printf("  ");
+        }
+        printf("\n");
+    }
+    for (int i=0; i<36; i++){
+        printf("%c ", sequence[i]);
     }
     return 0;
 }
