@@ -86,3 +86,52 @@ float calc(float a, float b, char s){
     
     return res;
 }
+// test
+#include <stdio.h>
+#include <stdlib.h>
+#define LASTDIGIT 10
+#define LASTOPERATOR 9
+int *finddigit(char input[]);
+char *findoperaror(char input[]);
+int main()
+{
+    char input[100];
+    char c;
+    int *digits;
+    
+    printf("put some digitals and operators:\n");
+    scanf("%[^\n]", input);
+    digits = finddigit(input);
+   
+    return 0;
+}
+int *finddigit(char s[]){
+    int output[LASTDIGIT];
+    int *out;
+    int counter;
+    int temp = 0;
+    for (int i = 0; ; i++){
+        if ('0'<=s[i] && s[i]<='9'){
+            temp = temp*10+(s[i] - '0');
+        }
+        if (s[i] == ' ' || s[i] == '\0'){
+            if (temp != 0){
+                if(counter>LASTDIGIT){
+                    printf("Error. Too many digits");
+                }
+                output[counter] = temp;
+                printf("%d ", output[counter]);
+                counter++;
+                temp = 0;
+            }
+        }
+        if(s[i] == '\0'){
+            break;
+        }
+    }
+    out = calloc(counter, sizeof(int));
+    for(int i = 0; i<counter; i++){
+        out[i] = output[i];
+    }
+    return out;
+}
