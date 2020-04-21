@@ -86,29 +86,79 @@ float calc(float a, float b, char s){
     
     return res;
 }
-// test
+// Калькулятор v2
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #define LASTDIGIT 10
 #define LASTOPERATOR 9
-int *finddigit(char input[]);
-char *findoperaror(char input[]);
+
+char *findoperator(char s[]);
+int *finddigit(char s[]);
+void calculate(int[], char[]);
 int main()
 {
     char input[100];
     char c;
     int *digits;
+    char *operators;
     
     printf("put some digitals and operators:\n");
     scanf("%[^\n]", input);
     digits = finddigit(input);
-   
+    printf("\n");
+    operators = findoperator(input);
+    calculate(digits, operators);
     return 0;
+}
+char *findoperator(char s[]){
+    char output[LASTOPERATOR];
+    char *out;
+    int counter = 0;
+    for (int i = 0;; i++){
+        if(counter>LASTOPERATOR) break;
+        switch(s[i]){
+            case '+': 
+                output[counter++] = s[i]; 
+                break;
+            case '-': 
+                output[counter++] = s[i]; 
+                break;
+            case '*': 
+                output[counter++] = s[i]; 
+                break;
+            case '/': 
+                output[counter++] = s[i]; 
+                break;
+            case 'c': 
+                output[counter++] = s[i];
+                break;
+            case 's': 
+                output[counter++] = s[i]; 
+                break;
+            case '^': 
+                output[counter++] = s[i]; 
+                break;
+            case '%': 
+                output[counter++] = s[i]; 
+                break;
+        }
+        if(s[i] == '\0'){
+            break;
+        }
+    }
+    out = calloc(counter+1, sizeof(char));
+    for (int i = 0; i<counter; i++){
+        out[i] = output[i];
+        printf("%c ", output[i]);
+    }
+    out[counter] = '\0';
+    return out;
 }
 int *finddigit(char s[]){
     int output[LASTDIGIT];
     int *out;
-    int counter;
+    int counter = 0;
     int temp = 0;
     for (int i = 0; ; i++){
         if ('0'<=s[i] && s[i]<='9'){
@@ -129,9 +179,44 @@ int *finddigit(char s[]){
             break;
         }
     }
-    out = calloc(counter, sizeof(int));
+    out = calloc(counter+1, sizeof(int));
     for(int i = 0; i<counter; i++){
         out[i] = output[i];
     }
+    out[counter] = 0;
     return out;
+}
+void calculate(int d[], char o[]){
+    float out = d[0];
+    int c = 1;
+    for( int i = 0; d[c]!=0, o[i]!='\0'; i++){
+        switch(o[i]){
+            case '+': 
+                out += d[c++]; 
+                break;
+            case '-': 
+                out -= d[c++]; 
+                break;
+            case '*': 
+                out *= d[c++];
+                break;
+            case '/': 
+                out /= d[c++]; 
+                break;
+            case 'c': 
+                out = cos(out);
+                break;
+            case 's': 
+                out = sin(out);
+                break;
+            case '^': 
+                out = pow(out, d[c++]);
+                break;
+            case '%': 
+                //printf("%0.1f % %d = %d\n",out,d[c++],out%d[c++]);
+                printf(" i can't mod");
+                break;
+        }
+    }
+    printf("\nout = %f ", out);
 }
