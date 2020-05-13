@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <stdlib.h>
+void vivod(char** str, int n, int length);
+int main(void)                  // определяем функцию main
+{
+	FILE *f;
+	fopen_s(&f, "input.txt", "r +");
+	int n, i, c = 0;
+	scanf_s("%d", &n);
+	char str[100];
+	char *strings[20];
+	
+	while (fgets(str, 100, f)) {
+		for (i = 0; str[i] != '\0'; i++) {
+		}
+		strings[c] = (char*)malloc((i+1)*sizeof(char));
+		for (i = 0; str[i] != '\0'; i++) {
+			strings[c][i] = str[i];
+		}
+		strings[c][i-1] = '\0';
+		c++;
+	}
+	//printf("%s\n", strings[0]);
+	vivod(strings, n, c);
+	scanf_s("%d", &n);
+	fclose(f);
+	return 0;                   // выходим из функции
+}
+void vivod(char** str, int n, int length) {
+	
+	if (length - 1 >= n) {
+		for (int i = length - n; i < length; i++) {
+			printf("%s\n", str[i]);
+		}
+	}
+}
