@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+struct books {
+    long isbn;//номер isbn
+    char* author;//автор книги
+    char* name;//название книги
+    int nbooks;//число книг
+    int hbooks;//число книг в наличии
+};
+void strtobook(char* str, struct books *book);//функция перевода строки в структуру
+void booktostr(struct books *book, char* str);//функция перевода структуры в строку
+int main()
+{
+    char str[] = "9666965348;Стругацкие;Град обреченный;10;5";
+    struct books *book;
+    book = (struct books*) malloc(sizeof(struct books));
+    strtobook(str, book);
+    printf("%ld %s %s %d %d",book->isbn,book->author,book->name,book->nbooks,book->hbooks);
+    char* newstr;
+    booktostr(book,newstr);
+    printf("%s",newstr);
+    return 0;
+}
+void strtobook(char* str, struct books *book){
+    char* temp; int c = 0;
+    temp = strtok(str,";\n");
+    while(temp!=NULL){
+        switch (c){
+            case 0: book->isbn = strtol(temp,NULL,10); break;
+            case 1: book->author = temp; break;
+            case 2: book->name = temp; break;
+            case 3: book->nbooks = strtol(temp,NULL,10); break;
+            case 4: book->hbooks = strtol(temp,NULL,10); break;
+        }
+        temp = strtok(NULL,";\n");
+        c++;
+    }
+    free(temp);
+}
+void booktostr(struct books *book, char* str){
+    char* temp;
+    itoa(book->isbn,temp, 10); strcat(str,temp);strcat(str,";");
+    temp = book->author; strcat(str,temp);strcat(str,";");
+    temp = book->name; strcat(str,temp);strcat(str,";");
+    itoa(book->nbooks,temp, 10); strcat(str,temp);strcat(str,";");
+    itoa(book->hbooks,temp, 10); strcat(str,temp);
+}
