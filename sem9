@@ -1,3 +1,4 @@
+//task1
 #include <stdio.h>
 #include <stdlib.h>
 void vivod(char** str, int n, int length);
@@ -33,4 +34,56 @@ void vivod(char** str, int n, int length) {
 			printf("%s\n", str[i]);
 		}
 	}
+}
+//task 2
+#include <stdio.h>
+#include <stdlib.h>
+void mixstrokes(FILE *f1, FILE *f2);
+char* newstring(char* str);
+int main(void)                  // определяем функцию main
+{
+	FILE *f1;
+	FILE *f2;
+	int n;
+	fopen_s(&f1, "input.txt", "r +");
+	fopen_s(&f2, "input2.txt", "r +");
+	mixstrokes(f1, f2);
+	scanf_s("%d", &n);
+	fclose(f1);
+	fclose(f2);
+	return 0;                  
+}
+void mixstrokes(FILE *f1, FILE *f2) {
+	char *s[30];
+	char *str = (char*)malloc(sizeof(char));
+	int l1 = 0, l2 = 0;
+	while (fgets(str, 100, f1)) {
+		s[l1] = newstring(str);
+		l1++;
+	}
+	l2 = l1;
+	while (fgets(str, 100, f2)) {
+		s[l2] = newstring(str);
+		l2++;
+	}
+	for (int i = 0, j = l1; i<l1 || j<l2; i++, j++) {
+		if (i < l1) {
+			printf("%s", s[i]);
+		}
+		if (j < l2) {
+			printf("%s", s[j]);
+		}
+	}
+
+}
+char* newstring(char* str) {
+	char* newstr = (char*)malloc(sizeof(char));
+	int i;
+	for (i = 0; str[i] != '\0'; i++) {
+		newstr = (char*)realloc(newstr, (i + 1) * sizeof(char));
+		newstr[i] = str[i];
+	}
+	newstr = (char*)realloc(newstr, (i + 1) * sizeof(char));
+	newstr[i] = '\0';
+	return newstr;
 }
