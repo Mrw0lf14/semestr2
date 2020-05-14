@@ -87,3 +87,36 @@ char* newstring(char* str) {
 	newstr[i] = '\0';
 	return newstr;
 }
+
+//task3
+#include <stdio.h>
+#include <stdlib.h>
+void splitonpages(FILE* f, int ch, int page);
+int main(void)                  // определяем функцию main
+{
+	FILE* f;
+	fopen_s(&f, "input.txt", "r +");
+	int ch, pages;
+	scanf_s("%d %d", &ch, &pages);
+	splitonpages(f, ch, pages);
+	scanf_s("%d", ch);
+	return 0;                   // выходим из функции
+}
+void splitonpages(FILE* f, int ch, int page) {
+	char* temp = (char*)malloc(sizeof(char));
+	int counts = 1; int countpages = 1;
+	while (fgets(temp, 100, f)) {
+		printf("\n%d) ", counts);
+		for (int i = 0; temp[i] != '\n' && temp[i] != '\0' && i < ch; i++) {
+			printf("%c", temp[i]);
+		}
+		counts++;
+		if (counts == page+1) {
+			counts = 1;
+			printf("\n---%d page---", countpages);
+			countpages++;
+		}
+	}
+	if(counts!=1)
+		printf("\n---%d page---", countpages);
+}
