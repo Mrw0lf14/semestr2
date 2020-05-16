@@ -1,0 +1,62 @@
+//task1
+#include <stdio.h>
+#include <stdlib.h>
+char* newstr(char* str);
+char** input(FILE* f);
+void output(char** strings);
+
+int main(void)                 
+{
+	char* str;
+	str = "input.txt";
+	FILE* f;
+	fopen_s(&f, str, "r +");
+	char** strings = (char**)malloc(sizeof(char*));
+	input(f, strings);
+	output(strings);
+	
+	printf("%s", str);
+
+	int n;
+	scanf_s("%d", &n);
+	return 0;                
+}
+char** input(FILE* f) {
+	char** strings = (char**)malloc(sizeof(char*));
+	
+	char* str = (char*)malloc(sizeof(char));
+	int i = 0;
+	while (fgets(str, 100, f)) {
+		strings = (char**)realloc(strings, (i+1)*sizeof(char*));
+		if(str)
+			strings[i] = newstr(str);
+		i++;
+	}
+	return strings;
+}
+char* newstr(char* str) {
+	char* out = (char*) calloc(1, sizeof(char));
+	int i;
+	if (str) {
+		for (i = 0; str[i] != '\0' && i < 100; i++) {
+			out = (char*)realloc(out, (i + 1) * sizeof(char));
+			out[i] = str[i];
+		}
+		if (str[i - 1] == '\n') {
+			str[i - 1] = '\0';
+		}
+		else {
+			out = (char*)realloc(out, (i + 1) * sizeof(char));
+			out[i] = '\0';
+		}
+		return out;
+	}
+	else 
+		return NULL;
+}
+
+void output(char** strings) {
+	for (int i = 0; strings[i]; i++) {
+		printf("%s\n", strings[i]);
+	}
+}
