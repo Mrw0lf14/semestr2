@@ -1,0 +1,258 @@
+//task 1
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+struct books{
+    long id;
+    char* author;
+    char* name;
+    int n_all;
+    int n_have;
+    struct books* next;
+};
+void menu();//основная функция, которая спрашивает действие
+void readfile(struct books** head);//основная функция тз, которая заполняет стек из файла
+void loadfile(struct books* head, FILE* f);//основная функция тз, которая загружает стек в файл
+
+int addBook(struct books** head);//функция тз, которая добавляет книгу в стек
+void deleteBook(struct books** head);//функция тз, которая удаляет книгу из стека
+void redactBook(struct books** head);//функция тз, которая "редактирует" книгу
+
+
+int findBook(struct books *head, long id, struct books **temp);//дополнительная функция, которая ищет книгу и сохраняет ее данные
+char* newstring(char* str);//дополнительная функция, которая переписывает строку в новый указатель
+struct books* delete(struct books* head, long id);//дополнительная функция, которая непосредственно удаляет книгу
+struct books* push(struct books *head, long id, char* author, char* name, int n_all, int n_have);//дополнительная функция, которая непосредственно загружает книгу в стек
+void show(struct books *head);//дополнительная функция, которая выводит стек на экран
+
+int main(void)
+{
+    menu();
+	return 0;
+}
+
+void menu(){
+    struct books* head = (struct books*)malloc(sizeof(struct books));//стек доступен всем из меню
+    /*
+    head = push(head, 1231231231,"asd asd","ads", 32, 21);
+    head = push(head, 1231231232,"aad asd","aas", 32, 21);
+    head = push(head, 1231231233,"add asd","ads", 32, 23);
+    */
+    readfile(&head);//заполняем стек
+    int func = -1;
+    while(func != 0){
+        printf("\nChoose function:\n1 add new book\n2 delete book\n3 redact book's inf\n4 save file\n5 show list\n");
+        scanf("%d", &func);
+        switch(func) {
+            case 1:
+                addBook(&head);
+                break;
+            case 2:
+                deleteBook(&head);
+                break;
+            case 3:
+                redactBook(&head);
+                break;
+            case 4:
+                //открыть файл на запись, удалив содержимое, загрузить стек, закрыть
+                FILE* f = fopen( "books.csv", "w");
+                loadfile(head, f);
+                fclose(f);
+                break;
+            case 5:
+                show(head);
+                break;
+        }
+    }
+
+}
+int addBook(struct books** head){
+    printf("Putting book\n");
+    //временные переменные
+    long id;
+    char* author = malloc(sizeof(char));//эти данные не требуют чистки, так как испольуются стеком
+    char* name = malloc(sizeof(char));
+    int n_all;
+    int n_have;
+    printf("Put id or 0 to close\n");
+
+    scanf("%ld", &id);
+    while(findBook(*head,id, NULL) == 1){//проверка айди, данные по книге не сохраняем
+        printf("This book is already exist\n");
+        printf("Put id or 0 to close\n");
+        scanf("%ld", &id);
+    }
+    if(id == 0){
+        return 0;
+    }
+    printf("Put quantity of all books\n");
+    scanf("%d", &n_all);
+    printf("Put quantity of books tou have\n");
+    scanf("%d", &n_have);
+    printf("Put author and name in form:\n<author>;<name>\n");
+    scanf("\n%[^;];%[^\n]", author, name);
+    printf("You putted: %d; %d; %d; %s; %s;\n",id, n_all,n_have, author, name);
+
+    *(head) = push(*head ,id ,author ,name ,n_all ,n_have);
+    printf("New book created\n");
+}
+void deleteBook(struct books** head){
+    printf("Deleting book\n");
+    printf("Put id to delete book\n");
+    long id;
+    scanf("%ld", &id);
+
+    if(findBook(*head,id,NULL)){
+        printf("book is found...\n");
+        *(head) = delete(*head, id);//такое представление функции необходимо, чтобы перезаписать заголовок стека
+    }
+    else{
+        printf("book is not found\n");
+    }
+    show(*head);
+}
+struct books* delete(struct books* head, long id){
+    struct books* temp = head;
+    struct books* prev = NULL;
+    int c = 0;
+    while(temp != NULL){
+        if(temp->id == id){
+            if(c != 0) {//если удаляем не из вершины
+                prev->next = temp->next;//перенапрявляем ссылки
+                break;
+            }
+            else {
+                head = head->next;//у вершины нет предыдущего, потому достаточно сдвинуть вершину
+                break;
+            }
+        }
+        c++;
+        prev = temp;
+        temp = temp->next;
+    }
+    return head;//в данной функции остальные элементы также изменяют стек
+}
+int findBook(struct books *head, long id, struct books **temp){
+    if(head->id < 0) {
+        return 0;
+    }
+    if(id == head->id){
+        if(temp!=NULL)
+            *(temp) = head;
+        return 1;
+    }
+    if(head->next->id < 0) {
+        return 0;
+    }
+    return findBook(head->next, id, temp);
+}
+void redactBook(struct books** head){
+    printf("Redacting book\n");
+    printf("Put book's id:\n");
+    long id; int f = -1;
+
+    scanf("%ld", &id);
+
+    struct books* red = (struct books*)malloc(sizeof(struct books));
+    while(findBook(*head, id, &red) != 1 && id!=0){
+        printf("This book is not exist\n");
+        printf("Put id or 0 to close\n");
+        scanf("%ld", &id);
+    }
+    struct books apply = {id, red->author, red->name, red->n_all, red->n_have, NULL};
+    printf("%s", red->name);
+    char* tmp1 = (char*)malloc(sizeof(char));
+    char* tmp2 = (char*)malloc(sizeof(char));
+    printf("Choose value to change:\n0 exit\n1 author\n2 name\n3 all books\n4 book's have\n5 apply\n");
+    while(f!=0 && id!=0){
+        printf("function:\n");
+        scanf("%d", &f);
+
+        int n;
+        switch (f) {
+            case 1:
+                printf("put new author:\n");
+                scanf("\n%[^\n]", tmp1);
+                apply.author = tmp1;
+                break;
+            case 2:
+                printf("put new name:\n");
+                scanf("\n%[^\n]", tmp2);
+                apply.name = tmp2;
+                break;
+            case 3:
+                printf("put new all books:\n");
+                scanf("%d", &n);
+                apply.n_all = n;
+                break;
+            case 4:
+                printf("put new books you have:\n");
+                scanf("%d", &n);
+                apply.n_have = n;
+                break;
+            case 5:
+                printf("your book: %ld; %s; %s; %d; %d\n",apply.id, apply.author, apply.name, apply.n_all, apply.n_have);
+                *(head) = delete(*head, id);
+                *(head) = push(*head,apply.id, apply.author, apply.name, apply.n_all, apply.n_have);
+                break;
+        }
+    }
+}
+
+void show(struct books* head){
+    if(head->id>0){
+        printf("%ld;%s;%s;%d;%d\n",head->id,head->author,head->name,head->n_all,head->n_have);
+        show(head->next);
+    }
+}
+struct books* push(struct books *head, long id, char* author, char* name, int n_all, int n_have) {
+    struct books *new = (struct books *) malloc(sizeof(struct books));
+    new->author = author;
+    new->name = name;
+    new->n_have = n_have;
+    new->n_all = n_all;
+    new->id = id;
+    new->next = head;
+    return new;
+}
+
+
+char* newstring(char* str) {
+    char* newstr = (char*)malloc(sizeof(char));
+    int i;
+    for (i = 0; str[i] != '\0'; i++) {
+        newstr = (char*)realloc(newstr, (i + 1) * sizeof(char));
+        newstr[i] = str[i];
+    }
+    newstr = (char*)realloc(newstr, (i + 1) * sizeof(char));
+    newstr[i] = '\0';
+    return newstr;
+}
+
+void readfile(struct books** head){
+    //временные переменные, почему не структура? ее сложно обрабатывать(
+    long id;
+    char* author = malloc(sizeof(char));
+    char* name = malloc(sizeof(char));
+    int n_all;
+    int n_have;
+    FILE* f = fopen( "books.csv", "r");
+
+    while(fscanf(f,"%ld;%[^;];%[^;];%d;%d",&id,author,name,&n_all,&n_have)!=EOF){
+        //printf("your book: %ld; %s; %s; %d; %d",id, author, name,n_all,n_have);
+        *head = push(*head,id,newstring(author),newstring(name),n_all,n_have);
+    }
+    fclose(f);
+}
+void loadfile(struct books* head, FILE* f){
+    printf("Loading data...\n");
+
+    if(head!=NULL && head->id>0){
+        fprintf(f,"%ld;%s;%s;%d;%d\n",head->id,head->author,head->name,head->n_all,head->n_have);
+        loadfile(head->next, f);
+    }
+    else {
+        printf("File saved\n");
+        fclose(f);
+    }
+}
