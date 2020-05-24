@@ -1,0 +1,83 @@
+//task1
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+struct bin{
+    char* value;
+    int count;
+    struct bin* left;
+    struct bin* right;
+};
+char* newstring(char* str);
+struct bin* push(struct bin* head, char* str);
+void show(struct bin* head, int mod);
+int main()
+{
+    int mod;
+    char c1[] = "asc"; char c2[] = "desc";
+    char* temp = (char*)malloc(sizeof(char));
+    printf("Put mod:\n");
+    scanf("%s", temp);
+    while((strcmp(temp, c1) != 0) &&(strcmp(temp, c2) != 0)){
+        printf("ERROR. Put mod:\n");
+        scanf("%s", temp);
+    }
+    mod = strcmp(temp, c1);
+    char* filename = (char*)malloc(sizeof(char));
+    printf("Put filename:\n");
+    scanf("%s", filename);
+    struct bin* head = NULL;
+
+
+    FILE* f = fopen(filename, "r");
+    printf("mod = %d\n", mod);
+    while(fscanf(f,"%s", temp) != EOF) {
+        printf("%s\n",temp);
+        head = push(head, temp);
+    }
+    show(head, mod);
+    //printf("%s", head->value);
+    return 0;
+}
+void show(struct bin* head, int mod){
+    if(head!=NULL){
+        if(mod == 0){
+            show(head->left,mod);
+            printf("%d - %s\n", head->count, head->value);
+            show(head->right, mod);
+        }
+        else{
+            show(head->right, mod);
+            printf("%d - %s\n", head->count, head->value);
+            show(head->left,mod);
+        }
+
+    }
+}
+struct bin* push(struct bin* head, char* str){
+    int cond;
+    if(head==NULL){
+        head = (struct bin*)malloc(sizeof(struct bin));
+        head->value = newstring(str);
+        head->left = head->right = NULL;
+        head->count = 1;
+    }
+    else if((cond = strcmp(str,head->value)) == 0){
+        head->count++;
+    }
+    else if(cond<0){
+        head->left = push(head->left, str);
+    }
+    else{
+        head->right = push(head->right, str);
+    }
+    return head;
+}
+
+char* newstring(char* str) {
+    char* newstr = (char*)malloc(sizeof(char));
+    if(newstr!=NULL){
+        strcpy(newstr,str);
+    }
+    return newstr;
+}
