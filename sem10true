@@ -36,7 +36,9 @@ int main()
         head = push(head, temp);
     }
     show(head, mod);
-    //printf("%s", head->value);
+    free(head);
+    free(temp);
+    free(filename);
     return 0;
 }
 void show(struct bin* head, int mod){
