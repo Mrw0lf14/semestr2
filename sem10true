@@ -83,3 +83,100 @@ char* newstring(char* str) {
     }
     return newstr;
 }
+
+
+//task2
+/******************************************************************************
+
+                            Online C Compiler.
+                Code, Compile, Run and Debug C program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+struct nlist {
+    char nlist* next;
+    char* town;
+    int people;
+};
+#define HASHSIZE 15
+
+struct nlist* lookup(char* s);
+static struct nlist *hashtab[HASHSIZE];
+struct nlist* install(char* name, int value);
+unsigned hash(char* s);
+void plist();
+int main()
+{
+    int f = -1;
+    char* town = (char*) malloc(sizeof(char));
+    int people = 0;
+    while(f!=0){
+        printf("Menu:\n1 add\n2 delete\n3 list\n");
+        scanf("f");
+        switch(f){
+            case 1:
+                printf("Put town:\n");
+                scanf("%s", town);
+                printf("Put people:\n");
+                scanf("%d", &people);
+                if(install(town, people))
+                    printf("success\n");
+                else
+                    printf("error\n");
+                break;
+            case 2:
+                
+                break:
+            case 3:
+                plist();
+                break;
+        }
+        
+    }
+    printf("Hello World");
+
+    return 0;
+}
+
+void plist(){
+    for(int i = 0; i<HASHSIZE; i++){
+        struct nlist* tp;
+        for(tp = hashtab[i]; tp!=NULL; tp = tp->next){
+            printf("%s;%d\n", tp->town, tp->people);
+        }
+    }
+}
+
+struct nlist* lookup(char* s){
+    struct nlist* np;
+    for(np = hashtab[hash(s)]; np!=NULL; np = np->next)
+        if(strcmp(s, np->town) == 0)
+            return np;
+    return NULL;
+}
+struct nlist* install(char* name, int value){
+    struct nlist* np;
+    unsigned hashval;
+    if ((np = lookup(name)) == NULL){
+        np = (struct nlist*) malloc(sizeof(struct nlist));
+        if(np = NULL || (np->town = strdup(value)) == NULL)
+            return NULL;
+        hashval = hash(name);
+        np->next = hashtab[hashval];
+        hashtab[hashval] = np;
+    } else
+        free((void*) np->town);
+    if((np->town = strdup(value)) == NULL)
+        return NULL;
+    return np;
+}
+unsigned hash(char* s){
+    unsigned hashval;
+    for(hashval = 0; *s!='\0'; s++)
+        hashval = *s + 17 * hashval;
+    return hashval % HASHSIZE;
+}
