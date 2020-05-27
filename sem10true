@@ -100,7 +100,7 @@ Write your code in this editor and press "Run" button to compile and execute it.
 #include <string.h>
 struct nlist {
     struct nlist* next;
-    char* town;
+    char* name;
     int people;
 };
 #define HASHSIZE 15
@@ -155,17 +155,18 @@ int delete(char* name){
     struct nlist* prev = NULL;
     while(p!=NULL){
         printf("e");
-        if(strcmp(p->town, name) == 0){
+        if(strcmp(p->name, name) == 0){
             printf("l");
-            if(p != hashtab[hashval]) {
-                printf("t");
-                prev->next = p->next;
-                //free(p);
+            if(p == hashtab[hashval]) {
+                printf("p");
+                hashtab[hashval] = p->next;
+
                 return 1;
             }
             else {
-                hashtab[hashval]->next = p->next;
-                //free(p);
+                printf("t");
+                prev->next = p->next;
+                free(p);
                 return 1;
             }
         }
@@ -175,10 +176,10 @@ int delete(char* name){
     return 0;
 }
 void plist(){
+    struct nlist* tp;
     for(int i = 0; i<HASHSIZE; i++){
-        struct nlist* tp;
         for(tp = hashtab[i]; tp!=NULL; tp = tp->next){
-            printf("%s;%d\n", tp->town, tp->people);
+            printf("%s;%d\n", tp->name, tp->people);
         }
     }
 }
@@ -186,30 +187,32 @@ void plist(){
 struct nlist* lookup(char* s){
     struct nlist* np;
     for(np = hashtab[hash(s)]; np!=NULL; np = np->next)
-        if(strcmp(s, np->town) == 0)
+        if(strcmp(s, np->name) == 0)
             return np;
     return NULL;
 }
 struct nlist* install(char* name, int value){
     struct nlist* np;
     unsigned hashval;
+
     if ((np = lookup(name)) == NULL){
-        np = (struct nlist*) malloc(sizeof(struct nlist));
-        if(np == NULL || (np->town = _strdup(name)) == NULL)
+        np = (struct nlist*) malloc(sizeof(*np));
+        if(np == NULL || (np->name = _strdup(name)) == NULL)
             return NULL;
-        np->people = value;
+
         hashval = hash(name);
         np->next = hashtab[hashval];
         hashtab[hashval] = np;
     } else
-        free((void*) np->town);
-    if((np->town = _strdup(name)) == NULL)
+        free((void*) np->name);
+    if((np->people = value) == NULL)
         return NULL;
     return np;
 }
 unsigned hash(char* s){
     unsigned hashval;
     for(hashval = 0; *s!='\0'; s++)
-        hashval = *s + 17 * hashval;
+        hashval = *s + 31 * hashval;
+    printf("%d-", hashval%HASHSIZE);
     return hashval % HASHSIZE;
 }
