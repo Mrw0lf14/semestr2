@@ -45,6 +45,8 @@ char* newstring(char* str);//дополнительная функция, кот
 struct books* delete(struct books* head, long id);//дополнительная функция, которая непосредственно удаляет книгу
 struct books* push(struct books *head, long id, char* author, char* name, int n_all, int n_have);//дополнительная функция, которая непосредственно загружает книгу в стек
 void show(struct books *head);//дополнительная функция, которая выводит стек на экран
+
+void showStudWithBook();
 //login
 void login(int* rstud, int* rbooks);
 struct users* readUsers(struct users* head, char* login, char* pass, int r_stud, int r_book);
@@ -61,6 +63,7 @@ struct students* deleteStud(struct students* head, char* id);
 void redactStud(struct students** head);
 void saveStud(struct students* head);
 
+void showBookWithStud_id();
 //part 3
 struct student_books* readStudBook(struct student_books* head);
 struct student_books* pushStudBook(struct student_books* head, long id, char* stud_id, char* data);
@@ -91,8 +94,8 @@ int main(void)
     }
     //menuBooks();
     //menuStud();
-
-
+    //showBookWithStud_id();
+    showStudWithBook();
 
     return 0;
 }
@@ -174,13 +177,21 @@ void deleteBook(struct books** head){
     scanf("%ld", &id);
 
     if(findBook(*head,id,NULL)){
-        printf("book is found...\n");
-        *(head) = delete(*head, id);//такое представление функции необходимо, чтобы перезаписать заголовок стека
+
+        struct student_books* studbook = NULL;
+        studbook = readStudBook(studbook);
+        if(findStudentBooksById(studbook, id) == NULL) {
+            *(head) = delete(*head, id);//такое представление функции необходимо, чтобы перезаписать заголовок стека
+            printf("book is deleting...\n");
+        }
+        else{
+            printf("This book cannot be deleted\n");//у пользователя
+        }
     }
     else{
         printf("book is not found\n");
     }
-    show(*head);
+    //show(*head);
 }
 struct books* delete(struct books* head, long id){
     struct books* temp = head;
@@ -313,6 +324,25 @@ void loadfile(struct books* head, FILE* f){
     }
 }
 
+void showStudWithBook(){
+    struct students* students = NULL;
+    readStud(&students);
+    printf("Put books ISBN:\n");
+    long id;
+    scanf("%ld", &id);
+    struct student_books* studbooks = NULL;
+    studbooks = readStudBook(studbooks);
+    struct student_books* tpsb = studbooks;
+    while(tpsb!=NULL){
+        if(tpsb->id == id){
+            struct students* student = NULL;
+            if((student = findStud(students, tpsb->stud_id))!=NULL){
+                printf("%s;%s;%s;%s", student->name, student->midname, student->surname, tpsb->data);
+            }
+        }
+        tpsb = tpsb->next;
+    }
+}
 //login
 void login(int* r_stud, int* r_book){
     FILE* f = fopen("users.csv", "r");
@@ -455,10 +485,12 @@ void addStud(struct students** head){
     printf("Add Stud. Put id:\n");
     scanf("%s", id);
     struct students* new = (struct students*)malloc(sizeof(struct students));
+
     while(findStud(*head,id)){
         printf("Student is already exist. Put id:\n");
         scanf("%s", id);
     }
+
     new->id = newstring(id);
     char* temp = (char*)malloc(sizeof(char));
     printf("Put name:\n");
@@ -477,14 +509,25 @@ struct students* deleteStud(struct students* head, char* id){
     struct students* temp = head;
     struct students* prev = NULL;
     int c = 0;
+    struct student_books* studbook = NULL;
+    studbook = readStudBook(studbook);
+    if(findStudentBooksByStud_id(studbook, id) != NULL){
+        printf("Student cannot be deleted\n");
+        free(studbook);
+        return head;
+    }
+    free(studbook);
+
+    //listStudentBooks(studbook);
     while(temp!=NULL){
         if(strcmp(temp->id, id) == 0){
-            if(c == 0){
+            if (c == 0) {
                 head = temp->next;
+                printf("Student is deleting...\n");
                 return head;
-            }
-            else{
+            } else {
                 prev->next = temp->next;
+                printf("Student is deleting...\n");
                 return head;
             }
         }
@@ -562,14 +605,38 @@ void saveStud(struct students* head){
     fclose(f);
 }
 
+void showBookWithStud_id(){
+    struct books* books = NULL;
+    readBook(&books);
+    struct student_books* studbook = NULL;
+    studbook = readStudBook(studbook);
+    char* stud_id = (char*)malloc(sizeof(char));
+    printf("Put stud_id:\n");
+    scanf("%s", stud_id);
+    struct student_books* tpsb = studbook;
+    while(tpsb!=NULL){
+        if(strcmp(tpsb->stud_id, stud_id) == 0){
+            struct books* book = NULL;
+            if(findBook(books, tpsb->id, &book) == 1){
+                printf("%s;%s;%s\n", book->name, book->author, tpsb->data);
+            }
+            else{
+                printf("books is not exist\n");
+            }
+        }
+        tpsb = tpsb->next;
+    }
+
+}
 //part 3
 struct student_books* readStudBook(struct student_books* head){
-    FILE* f = fopen("student_books.csv", "r +");
+    FILE* f = fopen("student_books.csv", "r");
     char* stud_id = (char*)malloc(sizeof(char));
     char* data = (char*)malloc(sizeof(char));
     long id;
     struct student_books* new = head;
     while(fscanf(f,"%ld;%[^;];%[^\n]\n", &id, stud_id, data)!=EOF){
+        //printf("%ld;%s;%s\n", id, stud_id, data);
         new = pushStudBook(new, id, stud_id, data);
     }
     fclose(f);
