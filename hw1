@@ -26,7 +26,12 @@ struct users{
     struct users* left;
     struct users* right;
 };
-
+struct student_books{
+    long id;
+    char* stud_id;
+    char* data;
+    struct student_books* next;
+};
 //book
 
 void menuBooks();//основная функция, которая спрашивает действие
@@ -55,6 +60,14 @@ struct students* findStud(struct students* head, char* id);
 struct students* deleteStud(struct students* head, char* id);
 void redactStud(struct students** head);
 void saveStud(struct students* head);
+
+//part 3
+struct student_books* readStudBook(struct student_books* head);
+struct student_books* pushStudBook(struct student_books* head, long id, char* stud_id, char* data);
+struct student_books* findStudentBooksByStud_id(struct student_books* head,char* stud_id);
+struct student_books* findStudentBooksById(struct student_books* head,long id);
+void listStudentBooks(struct student_books* head);
+void saveStudentBooks(struct student_books* head);
 //########################################################################
 int main(void)
 {
@@ -78,6 +91,8 @@ int main(void)
     }
     //menuBooks();
     //menuStud();
+
+
 
     return 0;
 }
@@ -545,4 +560,61 @@ void saveStud(struct students* head){
         temp = temp->next;
     }
     fclose(f);
+}
+
+//part 3
+struct student_books* readStudBook(struct student_books* head){
+    FILE* f = fopen("student_books.csv", "r +");
+    char* stud_id = (char*)malloc(sizeof(char));
+    char* data = (char*)malloc(sizeof(char));
+    long id;
+    struct student_books* new = head;
+    while(fscanf(f,"%ld;%[^;];%[^\n]\n", &id, stud_id, data)!=EOF){
+        new = pushStudBook(new, id, stud_id, data);
+    }
+    fclose(f);
+    return new;
+}
+struct student_books* pushStudBook(struct student_books* head, long id, char* stud_id, char* data){
+    struct student_books* new = (struct student_books*)malloc(sizeof(struct student_books));
+    new->data = newstring(data);
+    new->stud_id = newstring(stud_id);
+    new->id = id;
+    new->next = head;
+    return new;
+}
+struct student_books* findStudentBooksByStud_id(struct student_books* head,char* stud_id){
+    struct student_books* tp = head;
+    while(tp!=NULL){
+        if(strcmp(stud_id, tp->stud_id) == 0){
+            return tp;
+        }
+        tp = tp->next;
+    }
+    return NULL;
+}
+struct student_books* findStudentBooksById(struct student_books* head,long id){// id = ISBN
+    struct student_books* tp = head;
+    while(tp!=NULL){
+        if(id == tp->id){
+            return tp;
+        }
+        tp = tp->next;
+    }
+    return NULL;
+}
+void listStudentBooks(struct student_books* head){
+    struct student_books* tp = head;
+    while (tp!=NULL){
+        printf("%ld;%s;%s\n", tp->id, tp->stud_id, tp->data);
+        tp = tp->next;
+    }
+}
+void saveStudentBooks(struct student_books* head){
+    struct student_books* tp = head;
+    FILE* f = fopen("student_books.csv","w");
+    while(tp!=NULL){
+        fprintf(f,"%ld;%s;%s\n", tp->id, tp->stud_id, tp->data);
+        tp = tp->next;
+    }
 }
