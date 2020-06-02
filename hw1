@@ -109,7 +109,7 @@ char* newstring(char* str) {
 }
 int mainmenu() {
     int i = 0;
-    printf("choose option:\n0 exit\n1 books\n2 students\n3 add student's book\n");
+    printf("Main menu. Choose option:\n0 exit\n1 books\n2 students\n3 add student's book\n");
     scanf("%d", &i);
     return i;
 }
@@ -692,18 +692,19 @@ void saveStudentBooks(struct student_books* head){
 void addStudBook(){
     printf("GetBook. Put your stud_id:\n");
     char* stud_id = (char*)malloc(sizeof(char));
+    char* data = (char*)malloc(sizeof(char));
+    struct student_books *studBooks = NULL;
     scanf("%s", stud_id);
     struct students* students = NULL;
+    struct books* books = NULL;
+    struct books* book = (struct books*)malloc(sizeof(struct books));
     readStud(&students);
     if(findStud(students, stud_id)!=NULL){
         long isbn;
         printf("Put book's ISBN:\n");
         scanf("%ld", &isbn);
-        struct student_books *studBooks = NULL;
         studBooks = readStudBook(studBooks);
-        struct books* books = NULL;
         readBook(&books);
-        struct books* book = (struct books*)malloc(sizeof(struct books));
         //show(books);
         if(findBook(books, isbn, &book) == 1){
             if(book->n_have == 0) {
@@ -714,7 +715,6 @@ void addStudBook(){
                     printf("Error\n");
             }
             else{
-                char* data = (char*)malloc(sizeof(char));
                 printf("Put data:\n");
                 scanf("%s", data);
                 studBooks = pushStudBook(studBooks, isbn, stud_id, data);
@@ -723,6 +723,7 @@ void addStudBook(){
                 books = push(books,book->id, book->author, book->name, book->n_all, book->n_have);
                 loadfile(books);
                 saveStudentBooks(studBooks);
+
             }
         }
         else{
@@ -732,4 +733,9 @@ void addStudBook(){
     else{
         printf("Student is not exist.\n");
     }
+
+    free(books);
+    free(book);
+    free(studBooks);
+    free(students);
 }
